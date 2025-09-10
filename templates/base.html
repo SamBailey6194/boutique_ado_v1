@@ -22,6 +22,7 @@
     {% endblock %}
 
     {% block corejs %}
+        <script src="https://kit.fontawesome.com/b28d0f6314.js" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="..." crossorigin="anonymous"></script>
     {% endblock %}
 
@@ -33,7 +34,7 @@
   </head>
   <body>
     <header class="container-fluid fixed-top bg-white">
-        <div class="row">
+        <div id="topnav" class="row bg-white pt-lg-2 d-none d-lg-flex">
             {# Logo #}
             <div class="col-12 col-lg-4 my-auto py-1 py-lg-0 text-center text-lg-start">
                 <a href="{% url 'home:home' %}" class="nav-link main-logo-link">
