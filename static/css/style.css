@@ -73,13 +73,21 @@ body {
     z-index: -1;
 }
 
+.header-container {
+        padding-top: 45px;
+    }
+
 /* -------------------------------- Media Queries */
 
-/* Slightly larger container on xl screens */
-@media (min-width: 1200px) {
-  .container {
-    max-width: 80%;
-  }
+/* pad the top a bit when navbar is collapsed on mobile */
+@media (min-width: 394px) {
+    .header-container {
+        padding-top: 20px;
+    }
+
+    body {
+        height: calc(100vh - 116px);
+    }
 }
 
 /* fixed top navbar only on medium and up */
@@ -93,17 +101,13 @@ body {
     }
 
     .header-container {
-        padding-top: 100px;
+        padding-top: 95px;
     }
 }
 
-/* pad the top a bit when navbar is collapsed on mobile */
-@media (max-width: 991px) {
-    .header-container {
-        padding-top: 20px;
-    }
-
-    body {
-        height: calc(100vh - 116px);
-    }
+/* Slightly larger container on xl screens */
+@media (min-width: 1200px) {
+  .container {
+    max-width: 80%;
+  }
 }
