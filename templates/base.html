@@ -15,7 +15,7 @@
 
     {% block corecss %}
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-        <link rel="stylesheet" href="{% static 'css/style.css' %}">
+        <link rel="stylesheet" href="{% static '/css/style.css' %}">
     {% endblock %}
 
     {% block extra_css %}
@@ -33,6 +33,7 @@
 
   </head>
   <body class="d-flex flex-column min-vh-100">
+
     <header class="container-fluid fixed-top bg-white">
         <div id="topnav" class="row bg-white pt-lg-2 d-none d-lg-flex">
             {# Logo #}

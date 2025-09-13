@@ -5,9 +5,10 @@ html {
 }
 
 body {
+    position: relative;
     background: url('/media/homepage_background_cropped.jpg') no-repeat center center fixed;
     background-size: cover;
-    height: calc(100vh - 164px);
+    /* height: calc(100vh - 164px); */
     color: #555;
     font-family: 'Lato';
 }
@@ -63,8 +64,8 @@ body {
 }
 
 .overlay {
-    height: 100%;
-    width: 100%;
+    height: 100vh;
+    width: 100vw;
     top: 0;
     left: 0;
     position: fixed;
@@ -92,14 +93,14 @@ body {
     }
 
     .header-container {
-        padding-top: 164px;
+        padding-top: 100px;
     }
 }
 
 /* pad the top a bit when navbar is collapsed on mobile */
 @media (max-width: 991px) {
     .header-container {
-        padding-top: 116px;
+        padding-top: 20px;
     }
 
     body {
