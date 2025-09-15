@@ -77,6 +77,11 @@ body {
         padding-top: 45px;
     }
 
+a.category-badge > span.badge:hover {
+    background: #212529 !important;
+    color: #fff !important;
+}
+
 /* -------------------------------- Media Queries */
 
 /* pad the top a bit when navbar is collapsed on mobile */
