@@ -46,7 +46,7 @@
 
 {# Mobile shopping bag/cart link #}
 <li class="list-inline-item">
-    <a class="nav-link d-block d-lg-none {% if grand_total %}text-primary fw-bold{% else %}text-black{% endif %}" href="">
+    <a class="nav-link d-block d-lg-none {% if grand_total %}text-primary fw-bold{% else %}text-black{% endif %}" href="{% url 'bag:view_bag' %}">
         <div class="text-center">
             <div><i class="fas fa-shopping-bag fa-lg"></i></div>
             <p class="my-0">

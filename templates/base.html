@@ -85,7 +85,7 @@
 
                     {# Basket #}
                     <li class="list-inline-item">
-                        <a href="" class="nav-link {% if grand_total %}text-info fw-bold{% else %}text-black{% endif %}">
+                        <a href="{% url 'bag:view_bag' %}" class="nav-link {% if grand_total %}text-info fw-bold{% else %}text-black{% endif %}">
                             <div class="text-center">
                                 <div><i class="fas fa-shopping-bag fa-lg"></i></div>
                                 <p class="my-0">
