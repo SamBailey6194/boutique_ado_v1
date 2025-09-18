@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from products.models import Product
 
 
@@ -7,7 +7,34 @@ def view_bag(request):
     """
     A view to render shopping bag
     """
-    return render(request, 'bag/bag.html')
+    bag = request.session.get('bag', {})
+    bag_items = []
+
+    for item_id, item_data in bag.items():
+        product = get_object_or_404(Product, pk=item_id)
+
+        if product.has_sizes:
+            for size, quantity in item_data.get('items_by_size', {}).items():
+                bag_items.append({
+                    'item_id': item_id,
+                    'product': product,
+                    'quantity': quantity,
+                    'size': size,
+                    'subtotal': product.price * quantity
+                })
+        else:
+            quantity = item_data if isinstance(item_data, int) else 0
+            bag_items.append({
+                'item_id': item_id,
+                'product': product,
+                'quantity': quantity,
+                'subtotal': product.price * quantity
+            })
+
+    context = {
+        'bag_items': bag_items,
+    }
+    return render(request, 'bag/bag.html', context)
 
 
 def add_to_bag(request, item_id):
