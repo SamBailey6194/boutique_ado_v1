@@ -100,6 +100,19 @@ a.category-badge > span.badge:hover {
     cursor: pointer;
 }
 
+/* Chrome, Safari, Edge, Opera */
+.qty_input::-webkit-outer-spin-button,
+.qty_input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Firefox */
+.qty_input[type=number] {
+    -moz-appearance: textfield;
+    appearance: textfield; /* future-proof */
+}
+
 /* -------------------------------- Media Queries */
 
 /* pad the top a bit when navbar is collapsed on mobile */
