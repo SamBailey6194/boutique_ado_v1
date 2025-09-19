@@ -1,84 +1,104 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.urls import reverse
+from django.contrib import messages
 from products.models import Product
 
 
 # Create your views here.
 def view_bag(request):
     """ Render shopping bag """
-    bag = request.session.get('bag', {})
-    bag_items = []
-
-    total = 0
-
-    for item_id, item_data in bag.items():
-        product = get_object_or_404(Product, pk=item_id)
-
-        if product.has_sizes:
-            for size, quantity in item_data.get('items_by_size', {}).items():
-                subtotal = product.price * quantity
-                total += subtotal
-                bag_items.append({
-                    'item_id': item_id,
-                    'product': product,
-                    'quantity': quantity,
-                    'size': size,
-                    'subtotal': subtotal
-                })
-        else:
-            quantity = item_data if isinstance(item_data, int) else 0
-            subtotal = product.price * quantity
-            total += subtotal
-            bag_items.append({
-                'item_id': item_id,
-                'product': product,
-                'quantity': quantity,
-                'subtotal': subtotal
-            })
-
-    context = {
-        'bag_items': bag_items,
-        'total': total,
-        'delivery': 0,  # or calculate delivery
-        'grand_total': total,  # total + delivery
-    }
-    return render(request, 'bag/bag.html', context)
+    return render(request, 'bag/bag.html')
 
 
 def add_to_bag(request, item_id):
     """
     Add a quantity of the specified product to the shopping bag.
-    Handles products with and without sizes.
+    Handles products with and without sizes and displays messages.
     """
     product = Product.objects.get(pk=item_id)
-    quantity = int(request.POST.get('quantity', 1))
+    try:
+        quantity = int(request.POST.get('quantity', 1))
+    except ValueError:
+        quantity = 1  # Fallback in case of invalid input
+
     redirect_url = request.POST.get('redirect_url', '/')
     size = request.POST.get('product_size', None)
+    item_id = str(item_id)  # Ensure session consistency
 
-    # Ensure item_id is always a string for session consistency
-    item_id = str(item_id)
-
-    # Get existing bag or initialize new one
     bag = request.session.get('bag', {})
 
+    # Defensive check: quantity must be between 1 and 99
+    if quantity < 1 or quantity > 99:
+        messages.error(
+            request,
+            f'Invalid quantity for {product.name}. '
+            'Must be between 1 and 99.'
+            )
+        return redirect(redirect_url)
+
+    # Products with sizes
     if product.has_sizes and size:
-        # Product has sizes
         if item_id not in bag:
             bag[item_id] = {'items_by_size': {}}
+            messages.info(
+                request,
+                f'Created new entry for {product.name} in '
+                'your bag.'
+                )
 
-        # Merge/add quantity for this size
         current_qty = bag[item_id]['items_by_size'].get(size, 0)
-        bag[item_id]['items_by_size'][size] = current_qty + quantity
+        if current_qty:
+            bag[item_id]['items_by_size'][size] += quantity
+            messages.success(
+                request,
+                f'Updated size {size.upper()} {product.name} quantity to '
+                f'{bag[item_id]["items_by_size"][size]}'
+            )
+        else:
+            bag[item_id]['items_by_size'][size] = quantity
+            messages.success(
+                request,
+                f'Added size {size.upper()} '
+                f'{product.name} to your bag'
+                )
+
+        if bag[item_id]['items_by_size'][size] > 10:
+            messages.warning(
+                request,
+                'You have added a large quantity of size '
+                f'{size.upper()} {product.name}.'
+                )
+
+    # Products without sizes
     else:
-        # Product without sizes
         if item_id in bag and isinstance(bag[item_id], int):
             bag[item_id] += quantity
+            messages.success(
+                request,
+                f'Updated {product.name} quantity to '
+                f'{bag[item_id]}'
+                )
+            messages.info(
+                request,
+                f'{product.name} now has {bag[item_id]} in '
+                'your bag.'
+                )
+
+            if bag[item_id] > 10:
+                messages.warning(
+                    request,
+                    f'You have added a large quantity of '
+                    f'{product.name}.'
+                    )
         else:
             bag[item_id] = quantity
-
-    # Debug: print bag contents
-    print("Bag before saving:", bag)
+            messages.success(request, f'Added {product.name} to your bag!')
+            messages.info(
+                request,
+                f'{product.name} was not previously in your '
+                'bag, now added.'
+                )
 
     request.session['bag'] = bag
     return redirect(redirect_url)

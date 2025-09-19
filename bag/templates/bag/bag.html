@@ -89,7 +89,7 @@
                                             <a class="remove-item text-danger float-right" id="remove_{{ item.item_id }}" data-size="{{ item.size|default_if_none:'' }}"><small>Remove</small></a>
                                         </td>
                                         <td class="py-3">
-                                            <p class="my-0">£{{ item.subtotal }}</p>
+                                            <p class="my-0">£{{ item.subtotal|floatformat:2 }}</p>
                                         </td>
                                     </tr>
                                 {% endfor %}

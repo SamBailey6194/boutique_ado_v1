@@ -119,12 +119,17 @@
     </header>
 
     {% if messages %}
-        <div class="container mt-3">
+        <div class="message-container">
             {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
+                {% if 'success' in message.tags %}
+                    {% include 'includes/toasts/toast_success.html' %}
+                {% elif 'error' in message.tags %}
+                    {% include 'includes/toasts/toast_error.html' %}
+                {% elif 'info' in message.tags %}
+                    {% include 'includes/toasts/toast_info.html' %}
+                {% elif 'warning' in message.tags %}
+                    {% include 'includes/toasts/toast_warning.html' %}
+                {% endif %}
             {% endfor %}
         </div>
     {% endif %}
@@ -147,7 +152,16 @@
 
     {# jQuery #}
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
     {% block postloadjs %}
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $('.toast').each(function () {
+                    var toast = new bootstrap.Toast(this);
+                    toast.show();
+                });
+            });
+        </script>
     {% endblock %}
 
   </body>

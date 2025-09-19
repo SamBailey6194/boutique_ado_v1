@@ -115,6 +115,21 @@ a.category-badge > span.badge:hover {
     appearance: textfield; /* future-proof */
 }
 
+.message-container {
+    position: fixed;
+    top: 72px;
+    right: 15px;
+    z-index: 99999999999;
+}
+
+.custom-toast {
+    overflow: visible;
+}
+
+.toast-capper {
+    height: 2px;
+}
+
 /* -------------------------------- Media Queries */
 
 /* pad the top a bit when navbar is collapsed on mobile */
