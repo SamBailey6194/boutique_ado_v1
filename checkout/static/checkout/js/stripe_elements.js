@@ -46,6 +46,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Handle form submission
     const form = document.getElementById('payment-form');
     const submitButton = document.getElementById('submit-button');
+    const paymentForm = document.getElementById('payment-form');
+    const loadingOverlay = document.getElementById('loading-overlay');
 
     form.addEventListener('submit', async (event) => {
         event.preventDefault();
@@ -53,6 +55,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // Disable inputs while processing
         card.update({ disabled: true });
         submitButton.disabled = true;
+
+        // Hide the form and show overlay
+        paymentForm.classList.add("hidden");
+        loadingOverlay.classList.add("active");
 
         const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
             payment_method: { card }
@@ -62,12 +68,14 @@ document.addEventListener('DOMContentLoaded', () => {
             // Show error and re-enable inputs
             const errorDiv = document.getElementById('card-errors');
             errorDiv.innerHTML = `
-                <span class="icon" role="alert">
-                    <i class="fas fa-times"></i>
-                </span>
+                <span class="icon" role="alert"><i class="fas fa-times"></i></span>
                 <span>${error.message}</span>
             `;
             errorDiv.style.display = 'block';
+
+            // Revert UI
+            paymentForm.classList.remove("hidden");
+            loadingOverlay.classList.remove("active");
             card.update({ disabled: false });
             submitButton.disabled = false;
         } else if (paymentIntent.status === "succeeded") {
