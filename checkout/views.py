@@ -82,7 +82,7 @@ def checkout(request):
             request.session['save_info'] = 'save-info' in request.POST
 
             return redirect(
-                reverse('checkout_success', args=[order.order_number])
+                reverse('checkout:checkout_success', args=[order.order_number])
                 )
         else:
             messages.error(request, "There was an error with your form. "
@@ -128,7 +128,7 @@ def checkout_success(request, order_number):
     if 'bag' in request.session:
         del request.session['bag']
 
-    template = checkout/checkout_success.html
+    template = 'checkout/checkout_success.html'
     context = {
         'order': order,
     }
