@@ -54,5 +54,4 @@ def stripe_webhook(request):
     # Call the handler
     response = event_handler(event)
 
-    print('Success!')
     return response or HttpResponse(status=200)
