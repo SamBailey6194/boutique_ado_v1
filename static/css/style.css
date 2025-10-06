@@ -13,9 +13,9 @@ body {
     font-family: 'Lato';
 }
 
-/* .allauth {
+body.signup-page {
     padding-top: 80px;
-} */
+}
 
 .allauth .col-md-6.col-lg-4 {
     background: rgba(255, 255, 255, 0.85);
@@ -256,10 +256,10 @@ a.category-badge > span.badge:hover {
     .header-container {
         padding-top: 95px;
     }
-/* 
-    .allauth {
+
+    body.signup-page {
         padding-top: 160px;
-    } */
+    }
 }
 
 /* Slightly larger container on xl screens */
@@ -267,8 +267,4 @@ a.category-badge > span.badge:hover {
     .container {
         max-width: 80%;
     }
-
-    /* .allauth {
-        padding-top: 160px;
-    } */
 }

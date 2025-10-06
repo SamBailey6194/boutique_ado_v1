@@ -75,7 +75,7 @@
                                 {% if request.user.is_superuser %}
                                     <li><a href="" class="dropdown-item">Product Management</a></li>
                                 {% endif %}
-                                <li><a href="" class="dropdown-item">My Profile</a></li>
+                                <li><a href="{% url 'profiles:profile' %}" class="dropdown-item">My Profile</a></li>
                                 <li>
                                     <form method="post" action="{% url 'account_logout' %}">
                                         {% csrf_token %}

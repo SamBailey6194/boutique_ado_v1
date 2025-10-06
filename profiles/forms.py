@@ -1,7 +1,7 @@
 # profiles/forms.py
 from django import forms
 from allauth.account.forms import SignupForm
-from .models import UserProfile
+from .models import UserProfile, UserAddress
 from django_countries.fields import CountryField
 from django_countries.widgets import CountrySelectWidget
 
@@ -72,3 +72,90 @@ class CustomSignupForm(SignupForm):
         )
 
         return user
+
+
+class UserProfileForm(forms.ModelForm):
+    first_name = forms.CharField(
+        required=True,
+        widget=forms.TextInput(
+            attrs={'class': 'form-control', 'placeholder': 'First Name'}
+            )
+        )
+    last_name = forms.CharField(
+        required=True,
+        widget=forms.TextInput(
+            attrs={'class': 'form-control', 'placeholder': 'Last Name'}
+            )
+        )
+    email = forms.EmailField(
+        required=True,
+        widget=forms.EmailInput(
+            attrs={'class': 'form-control', 'placeholder': 'Email'}
+            )
+        )
+
+    class Meta:
+        model = UserProfile
+        fields = (
+            'first_name',
+            'last_name',
+            'email',
+            'default_phone_number',
+            'default_country',
+            'default_postcode',
+            'default_town_or_city',
+            'default_street_address1',
+            'default_street_address2',
+            'default_county',
+        )
+        widgets = {
+            'default_country': CountrySelectWidget(),
+        }
+
+    # Optional: Add placeholders and CSS classes for better UI
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Pre-populate the user fields
+        if self.instance and self.instance.user:
+            self.fields['first_name'].initial = self.instance.user.first_name
+            self.fields['last_name'].initial = self.instance.user.last_name
+            self.fields['email'].initial = self.instance.user.email
+
+        placeholders = {
+            'default_phone_number': 'Phone Number',
+            'default_postcode': 'Postcode',
+            'default_town_or_city': 'Town or City',
+            'default_street_address1': 'Street Address 1',
+            'default_street_address2': 'Street Address 2',
+            'default_county': 'County',
+        }
+        for field_name, field in self.fields.items():
+            field.widget.attrs['class'] = 'form-control'
+            if field_name in placeholders:
+                field.widget.attrs['placeholder'] = placeholders[field_name]
+
+
+class UserAddressForm(forms.ModelForm):
+    class Meta:
+        model = UserAddress
+        fields = [
+            'label',
+            'phone_number',
+            'country',
+            'postcode',
+            'town_or_city',
+            'street_address1',
+            'street_address2',
+            'county'
+        ]
+        widgets = {
+            'country': CountrySelectWidget(
+                attrs={'class': 'form-control stripe-style-input'}
+                ),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.widget.attrs['class'] = 'form-control stripe-style-input'

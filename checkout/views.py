@@ -2,11 +2,12 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.urls import reverse
 from django.views.decorators.http import require_POST
+from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.conf import settings
 import stripe
 import json
-from .forms import OrderForm
+from .forms import OrderForm, OrderChangeRequestForm
 from .models import Order, OrderLineItem
 from products.models import Product
 from bag.contexts import bag_contents
@@ -242,3 +243,27 @@ def checkout_success(request, order_number):
     }
 
     return render(request, template, context)
+
+
+@login_required
+@require_POST
+def submit_order_change_request(request, order_number):
+    """
+    Handle submission of an order change request
+    from a modal on the profile page.
+    """
+    order = get_object_or_404(Order, order_number=order_number)
+    form = OrderChangeRequestForm(request.POST)
+
+    if form.is_valid():
+        change_request = form.save(commit=False)
+        change_request.user = request.user
+        change_request.order = order
+        change_request.save()
+        messages.success(request, "Your change request has been submitted.")
+    else:
+        messages.error(
+            request, "There was an error submitting your change request."
+            )
+
+    return redirect('profiles:profile')

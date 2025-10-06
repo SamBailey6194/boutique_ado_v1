@@ -19,4 +19,9 @@ urlpatterns = [
         name='cache_checkout_data'
     ),
     path('wh/', stripe_webhook, name='webhook'),
+    path(
+        'order/<str:order_number>/change-request/',
+        views.submit_order_change_request,
+        name='submit_order_change_request'
+    ),
 ]

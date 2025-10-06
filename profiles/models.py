@@ -34,6 +34,11 @@ class UserAddress(models.Model):
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="addresses"
         )
+    label = models.CharField(
+        max_length=50,
+        default='My Address',
+        help_text="e.g. Home, Work, Parents' House"
+    )
     phone_number = models.CharField(max_length=20)
     country = CountryField()
     postcode = models.CharField(max_length=20)

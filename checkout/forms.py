@@ -1,5 +1,5 @@
 from django import forms
-from .models import Order
+from .models import Order, OrderChangeRequest
 
 
 class OrderForm(forms.ModelForm):
@@ -60,3 +60,23 @@ class OrderForm(forms.ModelForm):
             field.label = False
 
         self.fields['country'].empty_label = 'Country *'
+
+
+class OrderChangeRequestForm(forms.ModelForm):
+    class Meta:
+        model = OrderChangeRequest
+        fields = ['reason']
+        widgets = {
+            'reason': forms.Textarea(
+                attrs={
+                    'class': 'form-control',
+                    'rows': 4,
+                    'placeholder': (
+                        'Explain what you want to change about this order'
+                        ),
+                }
+            ),
+        }
+        labels = {
+            'reason': '',
+        }

@@ -2,7 +2,9 @@ import uuid
 from django.db import models
 from django.db.models import Sum
 from django.conf import settings
+from django.contrib.auth.models import User
 from django_countries.fields import CountryField
+from django.utils import timezone
 from products.models import Product
 from profiles.models import UserProfile
 
@@ -108,3 +110,41 @@ class OrderLineItem(models.Model):
 
     def __str__(self):
         return f'SKU {self.product.sku} on order {self.order.order_number}'
+
+
+class OrderChangeRequest(models.Model):
+    STATUS_CHOICES = (
+        ('pending', 'Pending'),
+        ('accepted', 'Accepted'),
+        ('declined', 'Declined'),
+    )
+
+    order = models.ForeignKey(
+        Order, on_delete=models.CASCADE, related_name='change_requests'
+        )
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE
+        )
+    reason = models.TextField(
+        help_text="Explain what you want to change about this order"
+        )
+    created_at = models.DateTimeField(
+        default=timezone.now
+        )
+    status = models.CharField(
+        max_length=10, choices=STATUS_CHOICES, default='pending'
+        )
+    staff_response = models.TextField(
+        blank=True, null=True, help_text="Response from shop staff"
+        )
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = "Order Change Request"
+        verbose_name_plural = "Order Change Requests"
+
+    def __str__(self):
+        return (
+            f"Change Request for Order {self.order.order_number} by "
+            f"{self.user.username}"
+            )

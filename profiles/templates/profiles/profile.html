@@ -1,33 +1,162 @@
 {% extends "base.html" %}
 {% load static %}
+{% load crispy_forms_tags %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'profiles/css/profile.css' %}">
+<link rel="stylesheet" href="{% static 'profiles/css/profile.css' %}">
 {% endblock %}
 
 {% block page_header %}
-    <div class="container header-container">
-        <div class="row">
-            <div class="col"></div>
-        </div>
+<div class="container header-container">
+    <div class="row">
+        <div class="col"></div>
     </div>
+</div>
 {% endblock %}
 
 {% block content %}
-    <div class="overlay"></div>
-    <div class="container">
-        <div class="row">
-            <div class="col">
-                <hr>
-                <h2 class="logo-font mb-4">{{ profile.user.username }} Profile</h2>
-                <hr>
-            </div>
+<div class="overlay"></div>
+<div class="container py-5">
+    <div class="row">
+        <div class="col">
+            <h2 class="logo-font mb-4">{{ profile.user.username }}’s Profile</h2>
+            <hr>
         </div>
+    </div>
+
+    <!-- Profile details and update form -->
+    <div class="row mb-5">
+        <div class="col-12 col-lg-6 mb-4">
+            <h4 class="mb-3">Default Delivery Information</h4>
+            <form method="POST" action="{% url 'profiles:profile' %}" class="form mb-3">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <button type="submit" name="update_profile" class="btn btn-dark rounded-0 mt-2">
+                    Update Information
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <hr>
+
+    <!-- Address Book -->
+    <div class="row mb-5">
+        <div class="col">
+            <h4 class="mb-3 d-flex justify-content-between align-items-center">
+                <span>Saved Addresses</span>
+                <button type="button" class="btn btn-black btn-sm" data-bs-toggle="modal" data-bs-target="#addAddressModal">
+                    Add New
+                </button>
+            </h4>
+            {% if addresses %}
+                <div class="row">
+                    {% for address in addresses %}
+                        <div class="col-md-6 col-lg-4 mb-3">
+                            <div class="card h-100 shadow-sm p-3">
+                                <p class="fw-bold mb-1">{{ address.label }}</p>
+                                <p class="mb-1">{{ address.street_address1 }}</p>
+                                {% if address.street_address2 %}
+                                    <p class="mb-1">{{ address.street_address2 }}</p>
+                                {% endif %}
+                                <p class="mb-1">{{ address.town_or_city }}{% if address.county %}, {{ address.county }}{% endif %}</p>
+                                <p class="mb-1">{{ address.country }}</p>
+                                <p class="mb-1">{{ address.postcode }}</p>
+                                <p class="small text-muted mb-2">{{ address.phone_number }}</p>
+                                <div class="d-flex justify-content-between">
+                                    <button type="button"
+                                            class="btn btn-sm btn-secondary btn-edit-address"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#editAddressModal"
+                                            data-id="{{ address.pk }}"
+                                            data-label="{{ address.label }}"
+                                            data-street1="{{ address.street_address1 }}"
+                                            data-street2="{{ address.street_address2 }}"
+                                            data-city="{{ address.town_or_city }}"
+                                            data-county="{{ address.county }}"
+                                            data-postcode="{{ address.postcode }}"
+                                            data-country="{{ address.country }}"
+                                            data-phone="{{ address.phone_number }}">
+                                        Edit
+                                    </button>
+
+                                    <button type="button"
+                                            class="btn btn-sm btn-danger btn-delete-address"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#deleteAddressModal"
+                                            data-id="{{ address.pk }}">
+                                        Delete
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-muted">You haven’t added any saved addresses yet.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <hr>
+
+    <!-- Order History -->
+    <div class="row">
+        <div class="col">
+            <h4 class="mb-3">Order History</h4>
+            {% if orders %}
+                <div class="table-responsive">
+                    <table class="table table-striped align-middle">
+                        <thead>
+                            <tr>
+                                <th>Order Number</th>
+                                <th>Date</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Request Change</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in orders %}
+                                <tr>
+                                    <td><a href="{% url 'order_detail' order.order_number %}">{{ order.order_number }}</a></td>
+                                    <td>{{ order.date|date:"d M Y" }}</td>
+                                    <td>£{{ order.grand_total }}</td>
+                                    <td>
+                                        {% if order.status == 'accepted' %}
+                                            <span class="badge bg-success">Accepted</span>
+                                        {% elif order.status == 'declined' %}
+                                            <span class="badge bg-danger">Declined</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">{{ order.status|title }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'request_order_change' order.order_number %}" class="btn btn-sm btn-outline-primary">
+                                            Request Change
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-muted">You haven’t placed any orders yet.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+
+{# ----------------------- MODALS ----------------------- #}
+
+{% include 'profiles/includes/address_modals.html' %}
+{% include 'checkout/includes/order_change_modal.html' %}
+
 {% endblock %}
 
 {% block postloadjs %}
     {{ block.super }}
-    {{ stripe_public_key | json_script:"id_stripe_public_key" }}
-    {{ client_secret | json_script:"id_client_secret" }}
-    <script src="{% static 'checkout/js/stripe_elements.js' %}"></script>
+    <script src="{% static 'profiles/js/address_edit.js' %}"></script>
 {% endblock %}
