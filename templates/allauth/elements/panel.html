@@ -1,0 +1,13 @@
+<div class="card mb-4 shadow-sm">
+    {% if title %}
+        <div class="card-header"><strong>{{ title }}</strong></div>
+    {% endif %}
+    <div class="card-body">
+        {{ body }}
+    </div>
+    {% if actions %}
+        <div class="card-footer text-end">
+            {{ actions }}
+        </div>
+    {% endif %}
+</div>

@@ -1,0 +1,68 @@
+{% extends "allauth/layouts/base.html" %}
+{% block body_class %}allauth{% endblock %}
+
+{% block entrance_content %}
+<div class="container d-flex align-items-center justify-content-center">
+    <div class="row justify-content-center w-100">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-black text-white text-center">
+                    <h1 class="logo-font my-0">{% block manage_title %}Manage Account{% endblock %}</h1>
+                </div>
+                <div class="card-body p-4">
+
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    {% block manage_content %}
+                    <p class="text-muted text-center mb-4">
+                        Select an option below to manage your account details.
+                    </p>
+
+                    <ul class="list-group mb-3">
+                        {% url 'account_email' as email_url %}
+                        {% if email_url %}
+                            <li class="list-group-item text-center">
+                                <a href="{{ email_url }}" class="text-black">Change Email</a>
+                            </li>
+                        {% endif %}
+
+                        {% url 'account_change_password' as password_url %}
+                        {% if password_url %}
+                            <li class="list-group-item text-center">
+                                <a href="{{ password_url }}" class="text-black">Change Password</a>
+                            </li>
+                        {% endif %}
+
+                        {% url 'socialaccount_connections' as social_url %}
+                        {% if social_url %}
+                            <li class="list-group-item text-center">
+                                <a href="{{ social_url }}" class="text-black">Manage Connected Accounts</a>
+                            </li>
+                        {% endif %}
+
+                        {% url 'usersessions_list' as sessions_url %}
+                        {% if sessions_url %}
+                            <li class="list-group-item text-center">
+                                <a href="{{ sessions_url }}" class="text-black">Active Sessions</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+
+                    <div class="text-center">
+                        <a href="{% url 'account_logout' %}" class="btn btn-outline-danger mt-3">Sign Out</a>
+                    </div>
+                    {% endblock manage_content %}
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

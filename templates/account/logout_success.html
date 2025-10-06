@@ -1,0 +1,38 @@
+{% extends "allauth/layouts/entrance.html" %}
+{% load i18n allauth account %}
+
+{% block title %}{% trans "Logged Out" %}{% endblock %}
+
+{% block entrance_content_inner %}
+<div class="container py-5">
+    <div class="row justify-content-center align-items-center align-items-lg-start">
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="p-4 rounded text-center">
+
+                {# H1 element #}
+                {% include "allauth/elements/h1.html" with content="Logged Out" tags="" %}
+
+                {# Logout confirmation message #}
+                <p>
+                    {% blocktranslate %}
+                        You have successfully logged out of your account.
+                    {% endblocktranslate %}
+                </p>
+
+                {# Button or link back to login #}
+                <div class="mt-3">
+                    <a href="{% url 'account_login' %}" class="btn btn-black w-100">
+                        {% blocktranslate %}Sign In Again{% endblocktranslate %}
+                    </a>
+                </div>
+
+                {# Optional: link to home page #}
+                <p class="mt-3">
+                    <a href="{% url 'home:home' %}">{% blocktranslate %}Return to Home Page{% endblocktranslate %}</a>
+                </p>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

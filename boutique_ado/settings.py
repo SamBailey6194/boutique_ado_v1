@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'crispy_bootstrap5',
     'setuptools',
+    'widget_tweaks',
     'home',
     'products',
     'bag',
@@ -86,6 +87,7 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                "django.template.context_processors.debug",
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
@@ -110,6 +112,9 @@ SITE_ID = 1
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 ACCOUNT_LOGIN_METHODS = {'username', 'email'}
+ACCOUNT_FORMS = {
+    'signup': 'profiles.forms.CustomSignupForm'
+    }
 ACCOUNT_SIGNUP_FIELDS = [
     "email*",
     "email2*",
@@ -118,9 +123,10 @@ ACCOUNT_SIGNUP_FIELDS = [
     "password2*",
 ]
 ACCOUNT_USERNAME_MIN_LENGTH = 4
-ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+ACCOUNT_EMAIL_VERIFICATION = 'none'
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/accounts/logout_success/'
 
 WSGI_APPLICATION = 'boutique_ado.wsgi.application'
 

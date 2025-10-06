@@ -1,0 +1,65 @@
+{% extends "allauth/layouts/entrance.html" %}
+{% load static i18n allauth account %}
+
+{% block title %}Sign Up{% endblock %}
+
+{% block entrance_content_inner %}
+<div class="container py-5">
+    <div class="row justify-content-center align-items-center">
+        <div class="col-12 col-md-6 col-lg-4">
+
+            <div class="p-4 rounded">
+
+                {# H1 element #}
+                {% include "allauth/elements/h1.html" with content="Sign Up" tags="" %}
+
+                {% if form.errors %}
+                    <div class="alert alert-danger">
+                        {% for field in form %}
+                            {% for error in field.errors %}
+                                <p>{{ error|escape }}</p>
+                            {% endfor %}
+                        {% endfor %}
+                        {% for error in form.non_field_errors %}
+                            <p>{{ error|escape }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                {# Signup form using your form.html wrapper #}
+                <form method="post" action="{% url 'account_signup' %}" class="entrance login">
+                    {% csrf_token %}
+                    {# Custom profile fields #}
+                    {% include "allauth/elements/field.html" with field=form.first_name %}
+                    {% include "allauth/elements/field.html" with field=form.last_name %}
+                    
+                    {# Allauth default fields #}
+                    {% include "allauth/elements/field.html" with field=form.username %}
+                    {% include "allauth/elements/field.html" with field=form.email %}
+                    {% include "allauth/elements/field.html" with field=form.email2 %}
+                    {% include "allauth/elements/field.html" with field=form.password1 %}
+                    {% include "allauth/elements/field.html" with field=form.password2 %}
+
+                    {# Custom profile fields #}
+                    {% include "allauth/elements/field.html" with field=form.default_country %}
+                    {% include "allauth/elements/field.html" with field=form.default_phone_number %}
+                    {% include "allauth/elements/field.html" with field=form.default_postcode %}
+                    {% include "allauth/elements/field.html" with field=form.default_town_or_city %}
+                    {% include "allauth/elements/field.html" with field=form.default_street_address1 %}
+                    {% include "allauth/elements/field.html" with field=form.default_street_address2 %}
+                    {% include "allauth/elements/field.html" with field=form.default_county %}
+                    <div>
+                        {% include "allauth/elements/button.html" with content="Sign Up" %}
+                    </div>
+                </form>
+
+                <p class="mt-3 text-center">
+                    {% blocktrans with login_url=login_url %}
+                        Already have an account? <a href="{{ login_url }}">Sign in</a>.
+                    {% endblocktrans %}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

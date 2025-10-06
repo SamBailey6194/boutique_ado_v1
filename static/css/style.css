@@ -13,6 +13,52 @@ body {
     font-family: 'Lato';
 }
 
+/* .allauth {
+    padding-top: 80px;
+} */
+
+.allauth .col-md-6.col-lg-4 {
+    background: rgba(255, 255, 255, 0.85);
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    width: 100%;
+}
+
+.allauth .col-md-6.col-lg-4 h1 {
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.allauth input.form-control {
+    border-radius: 5px;
+    padding: 0.6rem 0.75rem;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+}
+
+.allauth label.form-label {
+    font-weight: 600;
+}
+
+.allauth button[type="submit"] {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 5px;
+}
+
+.allauth p.text-center a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.allauth p.text-center a:hover {
+    text-decoration: underline;
+}
+
 /* from Bulma */
 .icon {
     align-items: center;
@@ -181,7 +227,12 @@ a.category-badge > span.badge:hover {
 
 /* -------------------------------- Media Queries */
 
-/* pad the top a bit when navbar is collapsed on mobile */
+@media (max-width: 575px) {
+    .allauth {
+        padding-top: 80px;
+    }
+}
+
 @media (min-width: 394px) {
     .header-container {
         padding-top: 20px;
@@ -205,11 +256,19 @@ a.category-badge > span.badge:hover {
     .header-container {
         padding-top: 95px;
     }
+/* 
+    .allauth {
+        padding-top: 160px;
+    } */
 }
 
 /* Slightly larger container on xl screens */
 @media (min-width: 1200px) {
-  .container {
-    max-width: 80%;
-  }
+    .container {
+        max-width: 80%;
+    }
+
+    /* .allauth {
+        padding-top: 160px;
+    } */
 }

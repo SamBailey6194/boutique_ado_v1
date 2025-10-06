@@ -3,6 +3,12 @@ from .models import Order
 
 
 class OrderForm(forms.ModelForm):
+    save_this_address = forms.BooleanField(
+        required=False,
+        initial=False,
+        label="Save this address to your profile"
+    )
+
     class Meta:
         model = Order
         fields = (
@@ -35,14 +41,22 @@ class OrderForm(forms.ModelForm):
         }
 
         self.fields['full_name'].widget.attrs['autofocus'] = True
-        for field in self.fields:
-            if field != 'country':
-                if self.fields[field].required:
-                    placeholder = f'{placeholders[field]} *'
-                else:
-                    placeholder = placeholders[field]
-                self.fields[field].widget.attrs['placeholder'] = placeholder
-            self.fields[field].widget.attrs['class'] = 'stripe-style-input'
-            self.fields[field].label = False
+
+        for field_name, field in self.fields.items():
+            # Use get() with default '' so KeyError doesn't happen
+            base_placeholder = placeholders.get(field_name, '')
+            if field_name != 'country' and field.required and base_placeholder:
+                placeholder = f'{base_placeholder} *'
+            else:
+                placeholder = base_placeholder
+
+            field.widget.attrs['placeholder'] = placeholder
+
+            # Apply classes to all fields
+            existing_classes = field.widget.attrs.get('class', '')
+            field.widget.attrs['class'] = (
+                f'{existing_classes} stripe-style-input'.strip()
+                )
+            field.label = False
 
         self.fields['country'].empty_label = 'Country *'

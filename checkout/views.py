@@ -10,6 +10,7 @@ from .forms import OrderForm
 from .models import Order, OrderLineItem
 from products.models import Product
 from bag.contexts import bag_contents
+from profiles.models import UserAddress
 
 
 @require_POST
@@ -105,6 +106,31 @@ def checkout(request):
             # Save info for future reference if checkbox checked
             request.session['save_info'] = 'save-info' in request.POST
 
+            # NEW: Update user profile if authenticated and checkbox checked
+            if request.user.is_authenticated and request.session['save_info']:
+                # Update single profile
+                profile = request.user.userprofile
+                profile.default_phone_number = order.phone_number
+                profile.default_country = order.country
+                profile.default_postcode = order.postcode
+                profile.default_town_or_city = order.town_or_city
+                profile.default_street_address1 = order.street_address1
+                profile.default_street_address2 = order.street_address2
+                profile.default_county = order.county
+                profile.save()
+
+                # Save to UserAddress if not already saved
+                UserAddress.objects.get_or_create(
+                    user=request.user,
+                    phone_number=order.phone_number,
+                    country=order.country,
+                    postcode=order.postcode,
+                    town_or_city=order.town_or_city,
+                    street_address1=order.street_address1,
+                    street_address2=order.street_address2,
+                    county=order.county,
+                )
+
             return redirect(
                 reverse('checkout:checkout_success', args=[order.order_number])
                 )
@@ -112,7 +138,65 @@ def checkout(request):
             messages.error(request, "There was an error with your form. "
                            "Please check your details.")
     else:
-        order_form = OrderForm()
+        if request.user.is_authenticated:
+            saved_addresses = request.user.addresses.all()
+            selected_address = None
+            address_id = request.GET.get('address_id')
+            if address_id:
+                selected_address = (
+                    saved_addresses.filter(id=address_id).first()
+                    )
+
+            # Pre-fill form from selected address, or default profile
+            initial_data = {
+                'full_name': (
+                    selected_address.full_name
+                    if selected_address
+                    else
+                    f'{request.user.first_name} '
+                    f'{request.user.last_name}'
+                    ),
+                'email': request.user.email,
+                'phone_number': (
+                    selected_address.phone_number
+                    if selected_address
+                    else request.user.userprofile.default_phone_number
+                    ),
+                'country': (
+                    selected_address.country
+                    if selected_address
+                    else request.user.userprofile.default_country
+                    ),
+                'postcode': (
+                    selected_address.postcode
+                    if selected_address
+                    else request.user.userprofile.default_postcode
+                    ),
+                'town_or_city': (
+                    selected_address.town_or_city
+                    if selected_address
+                    else request.user.userprofile.default_town_or_city
+                    ),
+                'street_address1': (
+                    selected_address.street_address1
+                    if selected_address
+                    else request.user.userprofile.default_street_address1
+                    ),
+                'street_address2': (
+                    selected_address.street_address2
+                    if selected_address
+                    else request.user.userprofile.default_street_address2
+                    ),
+                'county': (
+                    selected_address.county
+                    if selected_address
+                    else request.user.userprofile.default_county
+                    ),
+            }
+
+            order_form = OrderForm(initial=initial_data)
+        else:
+            order_form = OrderForm()
 
     # Show warning if Stripe public key missing
     if not stripe_public_key:

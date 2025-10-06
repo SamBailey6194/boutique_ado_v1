@@ -15,7 +15,7 @@
 
     {% block corecss %}
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-        <link rel="stylesheet" href="{% static '/css/style.css' %}">
+        <link rel="stylesheet" href="{% static 'css/style.css' %}">
     {% endblock %}
 
     {% block extra_css %}
@@ -33,7 +33,7 @@
     <title>{% block title %}Boutique Ado{% endblock %}</title>
 
   </head>
-  <body class="d-flex flex-column min-vh-100">
+  <body class="d-flex flex-column min-vh-100 {% block body_class %}{% endblock %}">
 
     <header class="container-fluid fixed-top bg-white">
         <div id="topnav" class="row bg-white pt-lg-2 d-none d-lg-flex">
@@ -76,7 +76,12 @@
                                     <li><a href="" class="dropdown-item">Product Management</a></li>
                                 {% endif %}
                                 <li><a href="" class="dropdown-item">My Profile</a></li>
-                                <li><a href="{% url 'account_logout' %}" class="dropdown-item">Logout</a></li>
+                                <li>
+                                    <form method="post" action="{% url 'account_logout' %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="dropdown-item">Logout</button>
+                                    </form>
+                                </li>
                             {% else %}
                                 <li><a href="{% url 'account_signup' %}" class="dropdown-item">Register</a></li>
                                 <li><a href="{% url 'account_login' %}" class="dropdown-item">Login</a></li>

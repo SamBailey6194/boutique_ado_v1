@@ -75,14 +75,43 @@
                 <form action="{% url 'checkout:checkout' %}" method="POST" id="payment-form">
                     {% csrf_token %}
                     <fieldset class="rounded px-3 mb-5">
+                        <legend class="fieldset-label small text-black px-2 w-auto">Address Selection</legend>
+                        {% if user.is_authenticated %}
+                            <div class="mb-3">
+                                <label for="id-address-select" class="form-label">Select a saved address:</label>
+                                <select id="id-address-select" name="address_id" class="form-select stripe-style-input">
+                                    <option value="">Use default profile address</option>
+                                    {% for addr in user.addresses.all %}
+                                        <option value="{{ addr.id }}"
+                                            data-full-name="{{ addr.full_name }}"
+                                            data-phone="{{ addr.phone_number }}"
+                                            data-country="{{ addr.country }}"
+                                            data-postcode="{{ addr.postcode }}"
+                                            data-town="{{ addr.town_or_city }}"
+                                            data-street1="{{ addr.street_address1 }}"
+                                            data-street2="{{ addr.street_address2 }}"
+                                            data-county="{{ addr.county }}"
+                                            {% if order_form.initial.phone_number == addr.phone_number %}selected{% endif %}>
+                                            {{ addr.street_address1 }}, {{ addr.town_or_city }}, {{ addr.country }}
+                                        </option>
+                                    {% empty %}
+                                        <!-- If no addresses, show only the default option -->
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        {% else %}
+                            <p class="text-muted">Login or create an account to save and select addresses.</p>
+                        {% endif %}
+                    </fieldset>
+                    <fieldset class="rounded px-3 mb-5">
                         <legend class="fieldset-label small text-black px-2 w-auto">Details</legend>
                         {{ order_form.full_name | as_crispy_field }}
                         {{ order_form.email | as_crispy_field }}
-                        {{ order_form.phone_number | as_crispy_field }}
                     </fieldset>
                     <fieldset class="rounded px-3 mb-5">
                         <legend class="fieldset-label small text-black px-2 w-auto">Delivery</legend>
                         {{ order_form.country | as_crispy_field }}
+                        {{ order_form.phone_number | as_crispy_field }}
                         {{ order_form.street_address1 | as_crispy_field }}
                         {{ order_form.street_address2 | as_crispy_field }}
                         {{ order_form.town_or_city | as_crispy_field }}
@@ -145,5 +174,6 @@
     {{ block.super }}
     {{ stripe_public_key | json_script:"id_stripe_public_key" }}
     {{ client_secret | json_script:"id_client_secret" }}
+    <script src="{% static 'checkout/js/address.js' %}"></script>
     <script src="{% static 'checkout/js/stripe_elements.js' %}"></script>
 {% endblock %}
