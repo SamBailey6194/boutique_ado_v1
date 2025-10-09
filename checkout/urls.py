@@ -18,10 +18,11 @@ urlpatterns = [
         views.cache_checkout_data,
         name='cache_checkout_data'
     ),
-    path('wh/', stripe_webhook, name='webhook'),
+    path('webhook/', stripe_webhook, name='webhook'),
     path(
         'order/<str:order_number>/change-request/',
         views.submit_order_change_request,
-        name='submit_order_change_request'
+        name='request_order_change'
     ),
+    path('order/<str:order_number>/', views.order_detail, name='order_detail'),
 ]

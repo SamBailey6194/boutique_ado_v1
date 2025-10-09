@@ -11,7 +11,7 @@ from .forms import OrderForm, OrderChangeRequestForm
 from .models import Order, OrderLineItem
 from products.models import Product
 from bag.contexts import bag_contents
-from profiles.models import UserAddress
+from profiles.models import UserAddress, UserProfile
 
 
 @require_POST
@@ -22,7 +22,11 @@ def cache_checkout_data(request):
         stripe.PaymentIntent.modify(pid, metadata={
             'bag': json.dumps(request.session.get('bag', {})),
             'save_info': request.POST.get('save_info'),
-            'username': request.user,
+            'username': (
+                request.user.id
+                if request.user.is_authenticated
+                else 'anonymous'
+                ),
         })
         return HttpResponse(status=200)
     except Exception as e:
@@ -53,6 +57,7 @@ def checkout(request):
     intent = stripe.PaymentIntent.create(
         amount=stripe_total,
         currency=settings.STRIPE_CURRENCY,
+        capture_method='manual',
     )
 
     if request.method == 'POST':
@@ -75,6 +80,39 @@ def checkout(request):
             pid = request.POST.get('client_secret').split('_secret')[0]
             order.stripe_pid = pid
             order.original_bag = json.dumps(bag)
+
+            if request.user.is_authenticated:
+                user_profile = get_object_or_404(
+                    UserProfile, user=request.user
+                    )
+                order.user_profile = user_profile
+
+            selected_address_id = request.POST.get('address_id')
+
+            if selected_address_id == "" or selected_address_id == "default":
+                # Use default profile address
+                if request.user.is_authenticated:
+                    profile = user_profile
+                    order.phone_number = profile.default_phone_number
+                    order.country = profile.default_country
+                    order.postcode = profile.default_postcode
+                    order.town_or_city = profile.default_town_or_city
+                    order.street_address1 = profile.default_street_address1
+                    order.street_address2 = profile.default_street_address2
+                    order.county = profile.default_county
+            else:
+                # Use the selected saved address
+                addr = get_object_or_404(
+                    UserAddress, id=selected_address_id, user=request.user
+                    )
+                order.phone_number = addr.phone_number
+                order.country = addr.country
+                order.postcode = addr.postcode
+                order.town_or_city = addr.town_or_city
+                order.street_address1 = addr.street_address1
+                order.street_address2 = addr.street_address2
+                order.county = addr.county
+
             order.save()
             # Create OrderLineItems from bag
             for item_id, item_data in bag.items():
@@ -110,7 +148,7 @@ def checkout(request):
             # NEW: Update user profile if authenticated and checkbox checked
             if request.user.is_authenticated and request.session['save_info']:
                 # Update single profile
-                profile = request.user.userprofile
+                profile = user_profile
                 profile.default_phone_number = order.phone_number
                 profile.default_country = order.country
                 profile.default_postcode = order.postcode
@@ -229,6 +267,34 @@ def checkout_success(request, order_number):
     """
     save_info = request.session.get('save_info')
     order = get_object_or_404(Order, order_number=order_number)
+
+    if request.user.is_authenticated:
+        user_profile = UserProfile.objects.get(user=request.user)
+        order.user_profile = user_profile
+        order.save()
+
+        if save_info:
+            user_profile.default_phone_number = order.phone_number
+            user_profile.default_country = order.country
+            user_profile.default_postcode = order.postcode
+            user_profile.default_town_or_city = order.town_or_city
+            user_profile.default_street_address1 = order.street_address1
+            user_profile.default_street_address2 = order.street_address2
+            user_profile.default_county = order.county
+            user_profile.save()
+
+            UserAddress.objects.create(
+                user=request.user,
+                full_name=order.full_name,
+                phone_number=order.phone_number,
+                country=order.country,
+                postcode=order.postcode,
+                town_or_city=order.town_or_city,
+                street_address1=order.street_address1,
+                street_address2=order.street_address2,
+                county=order.county,
+            )
+
     messages.success(request, f'Order successfully processed! '
                      f'Your order number is {order_number}. '
                      f'A confirmation email will be sent to {order.email}.'
@@ -253,10 +319,10 @@ def submit_order_change_request(request, order_number):
     from a modal on the profile page.
     """
     order = get_object_or_404(Order, order_number=order_number)
-    form = OrderChangeRequestForm(request.POST)
+    order_change_form = OrderChangeRequestForm(request.POST)
 
-    if form.is_valid():
-        change_request = form.save(commit=False)
+    if order_change_form.is_valid():
+        change_request = order_change_form.save(commit=False)
         change_request.user = request.user
         change_request.order = order
         change_request.save()
@@ -267,3 +333,8 @@ def submit_order_change_request(request, order_number):
             )
 
     return redirect('profiles:profile')
+
+
+def order_detail(request, order_number):
+    order = get_object_or_404(Order, order_number=order_number)
+    return render(request, 'checkout/order_detail.html', {'order': order})

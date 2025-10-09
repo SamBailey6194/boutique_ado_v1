@@ -11,6 +11,11 @@ from profiles.models import UserProfile
 
 # Create your models here.
 class Order(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('accepted', 'Accepted'),
+        ('declined', 'Declined'),
+    ]
     order_number = models.CharField(max_length=32, null=False, editable=False)
     user_profile = models.ForeignKey(
         UserProfile,
@@ -41,6 +46,9 @@ class Order(models.Model):
     original_bag = models.TextField(null=False, blank=False, default='')
     stripe_pid = models.CharField(
         max_length=254, null=False, blank=False, default=''
+        )
+    status = models.CharField(
+        max_length=10, choices=STATUS_CHOICES, default='pending'
         )
 
     def _generate_order_number(self):

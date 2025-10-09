@@ -1,0 +1,35 @@
+Hi {{ user.first_name }},
+
+Thank you for your order! We're excited to get your items to you.
+
+Order Number: {{ order.order_number }}
+Order Date: {{ order.date|date:"d M Y" }}
+
+Shipping Address:
+{{ order.full_name }}
+Phone: {{ order.phone_number }}
+{{ order.street_address1 }}
+{% if order.street_address2 %}{{ order.street_address2 }}{% endif %}
+{{ order.town_or_city }}{% if order.county %}, {{ order.county }}{% endif %}
+{{ order.postcode }}
+{{ order.country }}
+
+Order Summary:
+
+{% for item in order.lineitems.all %}
+
+{{ item.product.name }}{% if item.product_size %} (Size: {{ item.product_size|upper }}){% endif %} x {{ item.quantity }} – £{{ item.subtotal|floatformat:2 }}
+{% endfor %}
+
+Order Total: £{{ order.grand_total|floatformat:2 }}
+
+You can view your order and track its progress here:
+[View Order]( {{ order_detail_url }} )
+
+If you have any questions or need assistance, please reply to this email or contact our support team.
+
+Thank you for shopping with us!
+
+Best regards,
+[Your Store Name]
+[Website URL] | [Support Email] | [Phone Number]

@@ -26,6 +26,14 @@ class UserProfile(models.Model):
         )
     default_county = models.CharField(max_length=80, null=True, blank=True)
 
+    default_address = models.ForeignKey(
+        'UserAddress',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='default_for_user'
+    )
+
     def __str__(self):
         return self.user.username
 
@@ -39,6 +47,7 @@ class UserAddress(models.Model):
         default='My Address',
         help_text="e.g. Home, Work, Parents' House"
     )
+    full_name = models.CharField(max_length=50, blank=True, null=True)
     phone_number = models.CharField(max_length=20)
     country = CountryField()
     postcode = models.CharField(max_length=20)
@@ -46,6 +55,7 @@ class UserAddress(models.Model):
     street_address1 = models.CharField(max_length=80)
     street_address2 = models.CharField(max_length=80, blank=True)
     county = models.CharField(max_length=80, blank=True)
+    default = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.street_address1}, {self.town_or_city}, {self.country}"

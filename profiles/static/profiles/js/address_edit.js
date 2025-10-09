@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
             form.action = `/profile/address/${addressId}/edit/`; // points to UpdateView
             // Populate form fields with existing address data
             form.querySelector('#id_label').value = btn.dataset.label;
+            form.querySelector('#id_full_name').value = btn.dataset.label;
             form.querySelector('#id_street_address1').value = btn.dataset.street1;
             form.querySelector('#id_street_address2').value = btn.dataset.street2;
             form.querySelector('#id_town_or_city').value = btn.dataset.city;

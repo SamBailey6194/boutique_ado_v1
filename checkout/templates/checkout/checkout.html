@@ -80,22 +80,28 @@
                             <div class="mb-3">
                                 <label for="id-address-select" class="form-label">Select a saved address:</label>
                                 <select id="id-address-select" name="address_id" class="form-select stripe-style-input">
-                                    <option value="">Use default profile address</option>
+                                    <!-- Default profile address option -->
+                                    <option value="default"
+                                        {% if not selected_address_id %}selected{% endif %}>
+                                        Use default profile address
+                                        {% if profile.default_address %}
+                                            ({{ profile.default_address.street_address1 }}, {{ profile.default_address.town_or_city }}, {{ profile.default_address.country }})
+                                        {% endif %}
+                                    </option>
+
                                     {% for addr in user.addresses.all %}
                                         <option value="{{ addr.id }}"
+                                            {% if selected_address_id == addr.id %}selected{% endif %}
                                             data-full-name="{{ addr.full_name }}"
                                             data-phone="{{ addr.phone_number }}"
-                                            data-country="{{ addr.country }}"
-                                            data-postcode="{{ addr.postcode }}"
-                                            data-town="{{ addr.town_or_city }}"
                                             data-street1="{{ addr.street_address1 }}"
                                             data-street2="{{ addr.street_address2 }}"
+                                            data-town="{{ addr.town_or_city }}"
                                             data-county="{{ addr.county }}"
-                                            {% if order_form.initial.phone_number == addr.phone_number %}selected{% endif %}>
+                                            data-postcode="{{ addr.postcode }}"
+                                            data-country="{{ addr.country }}">
                                             {{ addr.street_address1 }}, {{ addr.town_or_city }}, {{ addr.country }}
                                         </option>
-                                    {% empty %}
-                                        <!-- If no addresses, show only the default option -->
                                     {% endfor %}
                                 </select>
                             </div>

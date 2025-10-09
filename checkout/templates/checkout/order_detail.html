@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'profiles/css/profile.css' %}">
+{% endblock %}
+
+{% block page_header %}
+<div class="container header-container">
+    <div class="row">
+        <div class="col">
+            <h2 class="logo-font mb-4">Order Details</h2>
+            <hr>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="overlay"></div>
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col">
+            <h4 class="mb-3">Order #{{ order.order_number }}</h4>
+            <p class="text-muted mb-1">Placed on: {{ order.date|date:"d M Y" }}</p>
+            <p class="text-muted mb-1">Status: 
+                {% if order.status == 'accepted' %}
+                    <span class="badge bg-success">Accepted</span>
+                {% elif order.status == 'declined' %}
+                    <span class="badge bg-danger">Declined</span>
+                {% else %}
+                    <span class="badge bg-secondary">{{ order.status|title }}</span>
+                {% endif %}
+            </p>
+            <p class="text-muted mb-1">Total: £{{ order.grand_total }}</p>
+        </div>
+    </div>
+
+    <hr>
+
+    <!-- Shipping Information -->
+    <div class="row mb-4">
+        <div class="col-12 col-lg-6 mb-3">
+            <div class="card shadow-sm p-3">
+                <h5 class="mb-3">Delivery Information</h5>
+                <p class="mb-1"><strong>Name:</strong> {{ order.full_name }}</p>
+                <p class="mb-1"><strong>Phone:</strong> {{ order.phone_number }}</p>
+                <p class="mb-1"><strong>Address:</strong></p>
+                <p class="mb-1">{{ order.street_address1 }}</p>
+                {% if order.street_address2 %}
+                    <p class="mb-1">{{ order.street_address2 }}</p>
+                {% endif %}
+                <p class="mb-1">{{ order.town_or_city }}{% if order.county %}, {{ order.county }}{% endif %}</p>
+                <p class="mb-1">{{ order.country }} - {{ order.postcode }}</p>
+            </div>
+        </div>
+    </div>
+
+    <hr>
+
+    <!-- Ordered Items -->
+    <div class="row">
+        <div class="col">
+            <h5 class="mb-3">Items in Order</h5>
+            {% if order.lineitems.all %}
+                <div class="table-responsive">
+                    <table class="table table-striped align-middle">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Size</th>
+                                <th>Quantity</th>
+                                <th>Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in order.lineitems.all %}
+                                <tr>
+                                    <td>{{ item.product.name }}</td>
+                                    <td>{{ item.product_size|default:"-" }}</td>
+                                    <td>{{ item.quantity }}</td>
+                                    <td>£{{ item.product.price|floatformat:2 }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-muted">No items found for this order.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col">
+            <a href="{% url 'profiles:profile' %}" class="btn btn-dark rounded-0">
+                Back to Profile
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
