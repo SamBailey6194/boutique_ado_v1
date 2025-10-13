@@ -21,16 +21,16 @@
         {% endif %}
     {% endif %}
 
-    <label class="btn btn-dark rounded-0">
-        Select Image 
-        <input 
-            type="{{ widget.type }}" 
-            name="{{ widget.name }}" 
-            {% if widget.value != None %} value="{{ widget.value|stringformat:'s' }}" {% endif %}
-            {% for attr, value in widget.attrs.items %} {{ attr }}="{{ value }}" {% endfor %}
-            style="display: none;">
+    <label class="btn btn-dark rounded-0 position-relative overflow-hidden">
+        Select Image
+        <input
+            type="file"
+            name="{{ widget.name }}"
+            id="new-image"
+            class="position-absolute top-0 start-0 w-100 h-100 opacity-0"
+        >
     </label>
-    <div class="mt-1 text-danger" id="filename"></div>
+    <div id="filename" class="mt-1 text-muted"></div>
 </div>
 
 <script>
