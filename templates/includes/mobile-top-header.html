@@ -32,7 +32,7 @@
         {# If the user is logged in #}
         {% if request.user.is_authenticated %}
             {% if request.user.is_superuser %}
-                <li><a href="{% url 'account_logout' %}" class="dropdown-item">Product Management</a></li>
+                <li><a href="{% url 'products:add_product' %}" class="dropdown-item">Product Management</a></li>
             {% endif %}
             <li><a href="" class="dropdown-item">My Profile</a></li>
             <li><a href="{% url 'account_logout' %}" class="dropdown-item">Logout</a></li>
