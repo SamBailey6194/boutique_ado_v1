@@ -197,8 +197,7 @@ USE_TZ = True
 AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
 AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME')
-AWS_S3_REGION_NAME = os.environ.get('AWS_S3_REGION_NAME', 'us-east-1')
-AWS_QUERYSTRING_AUTH = False  # clean URLs
+AWS_S3_REGION_NAME = 'eu-north-1'
 
 STATICFILES_LOCATION = 'static'
 MEDIAFILES_LOCATION = 'media'
@@ -206,6 +205,13 @@ MEDIAFILES_LOCATION = 'media'
 # Storage backends
 STATICFILES_STORAGE = 'custom_storages.StaticStorage'
 DEFAULT_FILE_STORAGE = 'custom_storages.MediaStorage'
+
+STATIC_URL = (
+    f'https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/{STATICFILES_LOCATION}/'
+    )
+MEDIA_URL = (
+    f'https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/{MEDIAFILES_LOCATION}/'
+    )
 
 # Optional: local fallback (if AWS credentials missing)
 if not AWS_ACCESS_KEY_ID or not AWS_SECRET_ACCESS_KEY:
