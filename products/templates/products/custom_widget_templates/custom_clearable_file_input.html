@@ -1,0 +1,47 @@
+{% load static %}
+
+<div class="mb-3">
+    {% if widget.is_initial %}
+        <p class="mb-2">{{ widget.initial_text }}:</p>
+        
+        {% if widget.value.url %}
+            <img src="{{ widget.value.url }}" alt="Current Image" class="img-thumbnail mb-2" style="max-width:150px;">
+        {% elif form.instance.image_url %}
+            <img src="{{ form.instance.image_url }}" alt="Current Image" class="img-thumbnail mb-2" style="max-width:150px;">
+        {% endif %}
+
+        {% if not widget.required %}
+            <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" name="{{ widget.checkbox_name }}" id="{{ widget.checkbox_id }}"
+                       {% if widget.attrs.checked %} checked{% endif %}>
+                <label class="form-check-label" for="{{ widget.checkbox_id }}">
+                    {{ widget.clear_checkbox_label }}
+                </label>
+            </div>
+        {% endif %}
+    {% endif %}
+
+    <label class="btn btn-dark rounded-0">
+        Select Image 
+        <input 
+            type="{{ widget.type }}" 
+            name="{{ widget.name }}" 
+            {% if widget.value != None %} value="{{ widget.value|stringformat:'s' }}" {% endif %}
+            {% for attr, value in widget.attrs.items %} {{ attr }}="{{ value }}" {% endfor %}
+            style="display: none;">
+    </label>
+    <div class="mt-1 text-danger" id="filename"></div>
+</div>
+
+<script>
+    // Optional: show selected file name
+    const fileInput = document.querySelector('input[name="{{ widget.name }}"]');
+    const filenameDisplay = document.getElementById('filename');
+
+    if (fileInput) {
+        fileInput.addEventListener('change', function() {
+            const fileName = this.files[0] ? this.files[0].name : '';
+            filenameDisplay.textContent = fileName;
+        });
+    }
+</script>
