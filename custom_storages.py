@@ -23,5 +23,5 @@ class MediaStorage(S3Boto3Storage):
     """
     location = getattr(settings, 'MEDIAFILES_LOCATION', 'media')
     default_acl = 'public-read'
-    file_overwrite = False
+    file_overwrite = True
     querystring_auth = False
