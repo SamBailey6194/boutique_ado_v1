@@ -57,7 +57,7 @@ def checkout(request):
     intent = stripe.PaymentIntent.create(
         amount=stripe_total,
         currency=settings.STRIPE_CURRENCY,
-        capture_method='manual',
+        capture_method='automatic',
     )
 
     if request.method == 'POST':
