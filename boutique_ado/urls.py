@@ -19,7 +19,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from django.views.generic import TemplateView
-from .views import handler404, handler500, handler403, handler400
+from . import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -31,9 +31,10 @@ urlpatterns = [
     path('products/', include('products.urls')),
     path('profile/', include('profiles.urls')),
     path('', include('home.urls')),
+    path("test400/", views.handler400, {"exception": Exception("Bad Request")}),
+    path("test403/", views.handler403, {"exception": Exception("Forbidden")}),
+    path("test404/", views.handler404, {"exception": Exception("Not Found")}),
+    path("test405/", views.handler405, {"exception": Exception("Method Not Allowed")}),
+    path("test410/", views.handler410, {"exception": Exception("Gone")}),
+    path("test500/", views.handler500),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
-handler404 = 'boutique_ado.views.handler404'
-handler500 = 'boutique_ado.views.handler500'
-handler403 = 'boutique_ado.views.handler403'
-handler400 = 'boutique_ado.views.handler400'
