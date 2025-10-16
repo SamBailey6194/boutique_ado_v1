@@ -33,9 +33,9 @@ urlpatterns = [
     path('', include('home.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-handler404 = views.handler404
-handler500 = views.handler500
-handler403 = views.handler403
-handler400 = views.handler400
-handler410 = views.handler410
-handler405 = views.handler405
+handler404 = 'boutique_ado.views.handler404'
+handler500 = 'boutique_ado.views.handler500'
+handler403 = 'boutique_ado.views.handler403'
+handler400 = 'boutique_ado.views.handler400'
+handler410 = 'boutique_ado.views.handler410'
+handler405 = 'boutique_ado.views.handler405'
