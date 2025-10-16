@@ -84,7 +84,7 @@ def product_detail(request, product_id):
 
 
 @login_required
-@user_passes_test(superuser_required)
+@user_passes_test(superuser_required, raise_exception=True)
 def add_product(request):
     """
     Add a product to the store
@@ -114,7 +114,7 @@ def add_product(request):
 
 
 @login_required
-@user_passes_test(superuser_required)
+@user_passes_test(superuser_required, raise_exception=True)
 def edit_product(request, product_id):
     """
     Edit a product in the store
@@ -147,7 +147,7 @@ def edit_product(request, product_id):
 
 
 @login_required
-@user_passes_test(superuser_required)
+@user_passes_test(superuser_required, raise_exception=True)
 def delete_product(request, product_id):
     """
     Delete a product in the store
