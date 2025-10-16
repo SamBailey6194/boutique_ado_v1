@@ -33,3 +33,6 @@ urlpatterns = [
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 handler404 = 'boutique_ado.views.handler404'
+handler500 = 'boutique_ado.views.handler500'
+handler403 = 'boutique_ado.views.handler403'
+handler400 = 'boutique_ado.views.handler400'
